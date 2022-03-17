@@ -2,19 +2,46 @@
 //
 
 #include <iostream>
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+
+using namespace std;
 
 int main()
 {
-    std::cout << "Hello World!\n";
+	//B, C, Dq, Eq
+	vector<string> vDir(2);
+	vDir[0] = "B";
+	vDir[1] = "C";
+
+	for (int i(0); i < vDir.size(); ++i) {
+		string dirname = "./BildeKrarup/" + vDir[i] + "/files.lst";
+		
+		ifstream mydir;
+		mydir.open(dirname);
+		if (!mydir.is_open()) cerr << "Can't open file " << dirname << '\n';
+		else {
+			ifstream myfile;
+			string line = "", filename ="";
+
+			while (getline(mydir, line)) {
+				string fileLine = "";
+				filename = "./BildeKrarup/" + vDir[i] + '/' + line;
+				cout << "Filename = " << filename << '\n';
+				myfile.open(filename);
+				if (!myfile.is_open()) cerr << "Can't open file " << filename << '\n';
+				
+				while (getline(myfile, fileLine)) {
+					cout << fileLine;
+				}
+				cout << '\n';
+				myfile.close();
+			}
+			mydir.close();
+		}
+	}
+	return 0;
 }
-
-// Exécuter le programme : Ctrl+F5 ou menu Déboguer > Exécuter sans débogage
-// Déboguer le programme : F5 ou menu Déboguer > Démarrer le débogage
-
-// Astuces pour bien démarrer : 
-//   1. Utilisez la fenêtre Explorateur de solutions pour ajouter des fichiers et les gérer.
-//   2. Utilisez la fenêtre Team Explorer pour vous connecter au contrôle de code source.
-//   3. Utilisez la fenêtre Sortie pour voir la sortie de la génération et d'autres messages.
-//   4. Utilisez la fenêtre Liste d'erreurs pour voir les erreurs.
-//   5. Accédez à Projet > Ajouter un nouvel élément pour créer des fichiers de code, ou à Projet > Ajouter un élément existant pour ajouter des fichiers de code existants au projet.
-//   6. Pour rouvrir ce projet plus tard, accédez à Fichier > Ouvrir > Projet et sélectionnez le fichier .sln.
