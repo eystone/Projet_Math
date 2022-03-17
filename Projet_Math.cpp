@@ -10,49 +10,64 @@
 
 using namespace std;
 
-vector<string> splitString(string str) {
-	vector<string> result;
+vector<int> splitLineToInt(string str) {
+	vector<int> result;
 	string current = "";
 	for (int i = 1; i < str.size(); i++) {
 		if (isblank(str[i])) {
-			result.push_back(current);
-			current = "";
+			if (current != "") {
+				result.push_back(stoi(current));
+				current = "";
+			}
+			continue;
 		}
 		else {
 			current += str[i];
 		}
 	}
 	if (current.size() != 0)
-		result.push_back(current);
+		result.push_back(stoi(current));
 	return result;
 }
 
 int minimum(vector<string> range) {
+/*	TO REMAKE !!!!!!!!!!!!!!!!!!!!!!
+* TO REMAKE !!!!!!!!!!!!!!!!!!!!!!
+* TO REMAKE !!!!!!!!!!!!!!!!!!!!!!
 	int actual = stoi(range[2]);
 	for (int i = 3; i < range.size(); ++i) {
 		actual = min(actual, stoi(range[i]));
 	}
-	return actual;
+	return actual;*/
+	return 0;
 }
 
-int Exo2(string fileLine) {
-	int Line1 = 0;
-	vector<string> result;
-	result = splitString(fileLine);
-	Line1 = stoi(result[1]);
-	return Line1 + minimum(result);
+int Exo2(vector<string> file) {
+	vector< vector<int> > result(file.size());
+	for (int i(0); i < file.size(); ++i) {
+		result.push_back(splitLineToInt(file[i]));
+	}
+
+	for (int i(0); i < result.size(); ++i) {
+		for (int j(0); j < result[i].size(); ++j) {
+			cout << result[i][j] << " ";
+		}
+		cout << '\n';
+	}
+	//need to make a min from each vector[i]
+	return 1;
 }
 
 int readFiles(string DirName) {
 	string dirname = DirName + "/files.lst";
 	
 	//Open output file
-	ofstream outFile;
+	/*ofstream outFile;
 	outFile.open("./output.txt", ofstream::app);
 	if (!outFile.is_open()) {
 		cerr << "Can't open file output.txt";
 		return 0;
-	}
+	}*/
 
 	//open dir file to get filename
 	ifstream mydir;
@@ -67,10 +82,10 @@ int readFiles(string DirName) {
 
 		//for each file
 		while (getline(mydir, line)) {
+			vector<string> strFile;
 			string strLine = "";
 			filename = DirName + '/' + line;
 			cout << "Filename = " << filename << '\n';
-			int result(0);
 
 			//open each file
 			myfile.open(filename);
@@ -82,14 +97,14 @@ int readFiles(string DirName) {
 			//make the sum of each file
 			for (int i(0); i < 2; ++i) getline(myfile, strLine);
 			while (getline(myfile, strLine)) {
-				result += Exo2(strLine);
+				strFile.push_back(strLine);
 			}
-
+			Exo2(strFile);
 			myfile.close();
-			outFile << filename << " result :" << result << '\n';
+			//outFile << filename << " result :" << result << '\n';
 		}
 		mydir.close();
-		outFile.close();
+		//outFile.close();
 	}
 	return 1;
 }
@@ -98,9 +113,9 @@ int getBildeKrarup() {
 	//B, C, Dq, Eq
 	vector<string> vDir(0);
 	vDir.push_back("B");
-	vDir.push_back("C");
+	/*vDir.push_back("C");
 	vDir.push_back("Dq");
-	vDir.push_back("Eq");
+	vDir.push_back("Eq");*/
 
 	for (int i(0); i < vDir.size(); i++) {
 		if (vDir[i] == "Dq" || vDir[i] == "Eq") {
