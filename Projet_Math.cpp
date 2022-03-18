@@ -2,18 +2,22 @@
 
 #include <iostream>
 #include <stdio.h>
-#include <iostream>
 #include <fstream>
 #include <ostream>
+
 #include <vector>
 #include <string>
+#include <algorithm>
+#include <unordered_set>
 
 using namespace std;
+typedef vector<int> VI;
+typedef vector<VI> VVI;
 
-vector<int> splitLineToInt(string str) {
-	vector<int> result;
+VI splitLineToInt(string str) {
+	VI result;
 	string current = "";
-	for (int i = 1; i < str.size(); i++) {
+	for (int i = 0; i < str.size(); i++) {
 		if (isblank(str[i])) {
 			if (current != "") {
 				result.push_back(stoi(current));
@@ -30,44 +34,68 @@ vector<int> splitLineToInt(string str) {
 	return result;
 }
 
-int minimum(vector<string> range) {
-/*	TO REMAKE !!!!!!!!!!!!!!!!!!!!!!
-* TO REMAKE !!!!!!!!!!!!!!!!!!!!!!
-* TO REMAKE !!!!!!!!!!!!!!!!!!!!!!
-	int actual = stoi(range[2]);
-	for (int i = 3; i < range.size(); ++i) {
-		actual = min(actual, stoi(range[i]));
+pair<int, int> minimum(VI column) {
+	int actualMin = column[0];
+	int indMin = 0;
+	for (int i = 1; i < column.size(); ++i) {
+		if (actualMin > column[i]) {
+			actualMin = column[i];
+			indMin = i;
+		}
 	}
-	return actual;*/
-	return 0;
+	return make_pair(indMin, actualMin);
 }
 
-int Exo2(vector<string> file) {
-	vector< vector<int> > result(file.size());
+VI removeDouble(VI VInt) {
+	VI result;
+	sort(VInt.begin(), VInt.end());
+	VInt.erase(unique(VInt.begin(), VInt.end()), VInt.end());
+
+	for (auto it = VInt.cbegin(); it != VInt.cend(); ++it) {
+		// cout << *it << ' ';
+		result.push_back(*it);
+	}
+	return result;
+}
+
+int Exo2(vector<string> file, int NbCol, int NbLine) {
+	VVI result;
+	VI indexUse;
+	VI Vcol;
+	pair<int, int> pIndVal;
+	int sum = 0;
+
 	for (int i(0); i < file.size(); ++i) {
 		result.push_back(splitLineToInt(file[i]));
 	}
 
-	for (int i(0); i < result.size(); ++i) {
-		for (int j(0); j < result[i].size(); ++j) {
-			cout << result[i][j] << " ";
+	for (int i = 2; i < NbCol; ++i) {
+		Vcol.clear();
+		for (int j = 0; j < NbLine; ++j) {
+			Vcol.push_back(result[j][i]);
 		}
-		cout << '\n';
+		pIndVal = minimum(Vcol);
+		sum += pIndVal.second;
+		indexUse.push_back(pIndVal.first);
 	}
-	//need to make a min from each vector[i]
-	return 1;
+	indexUse = removeDouble(indexUse);
+	for (int i = 0; i < indexUse.size(); ++i) {
+		sum += result[indexUse[i]][1];
+	}
+	return sum;
 }
+
 
 int readFiles(string DirName) {
 	string dirname = DirName + "/files.lst";
 	
 	//Open output file
-	/*ofstream outFile;
+	ofstream outFile;
 	outFile.open("./output.txt", ofstream::app);
 	if (!outFile.is_open()) {
 		cerr << "Can't open file output.txt";
 		return 0;
-	}*/
+	}
 
 	//open dir file to get filename
 	ifstream mydir;
@@ -86,6 +114,9 @@ int readFiles(string DirName) {
 			string strLine = "";
 			filename = DirName + '/' + line;
 			cout << "Filename = " << filename << '\n';
+			int result = 0;
+			int nbLin = 0;
+			int nbCol = 0;
 
 			//open each file
 			myfile.open(filename);
@@ -94,17 +125,23 @@ int readFiles(string DirName) {
 				return 0;
 			}
 
-			//make the sum of each file
+			//Get number of line and col
 			for (int i(0); i < 2; ++i) getline(myfile, strLine);
+			nbLin = splitLineToInt(strLine)[0];
+			nbCol = splitLineToInt(strLine)[1];
+
+			//read file
 			while (getline(myfile, strLine)) {
 				strFile.push_back(strLine);
 			}
-			Exo2(strFile);
+			//Make calcul + save results
+			result = Exo2(strFile, nbCol, nbLin);
+			outFile << filename << " result :" << result << '\n';
+
 			myfile.close();
-			//outFile << filename << " result :" << result << '\n';
 		}
 		mydir.close();
-		//outFile.close();
+		outFile.close();
 	}
 	return 1;
 }
@@ -113,9 +150,9 @@ int getBildeKrarup() {
 	//B, C, Dq, Eq
 	vector<string> vDir(0);
 	vDir.push_back("B");
-	/*vDir.push_back("C");
+	vDir.push_back("C");
 	vDir.push_back("Dq");
-	vDir.push_back("Eq");*/
+	vDir.push_back("Eq");
 
 	for (int i(0); i < vDir.size(); i++) {
 		if (vDir[i] == "Dq" || vDir[i] == "Eq") {
